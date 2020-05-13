@@ -112,7 +112,7 @@ class TextSummarizer:
         # Step 2 - Generate Similary Martix across sentences
         sentence_similarity_martix = self.__build_similarity_matrix(plot_pre_sentences)
 
-        print(sentence_similarity_martix)
+        #print(sentence_similarity_martix)
         # Step 3 - Rank sentences in similarity martix
         sentence_similarity_graph = nx.from_numpy_array(sentence_similarity_martix)
         plot_scores = nx.pagerank(sentence_similarity_graph)
@@ -164,30 +164,39 @@ class TextSummarizer:
 
 
 if __name__ == '__main__':
-    result = TextSummarizer.generate_from_file('Ada Apa Dengan Cinta', 'dataset/plot/1.txt', 'dataset/synopsis/1.txt')
-    #print(result.get("summarize_text"))
-
-
-    # result = TextSummarizer.generate_from_nonfile('Ada Apa Dengan Cinta', 'Naruto adalah anak muda yang suka. Dia ganteng. Dia akan menjadi hokage.', 'naruto hokage.', 1)
-    # print(result.get("summarize_text"))
-
+    result = TextSummarizer.generate_from_file('Bumi Manusia', 'dataset/plot/2.txt', 'dataset/synopsis/2.txt')
+    print(result.get("summarize_text"))
 
     stemmed_synopsis1 = result.get('human_preprocessed_synopsis')
     stemmed_summary1 = result.get('token_ringkasan')
 
     #print(stemmed_summary,stemmed_synopsis)
     print('Summary level:')
-    _, _, rouge_1 = rouge_n_summary_level(stemmed_summary1,stemmed_synopsis1, 1)
-    print('ROUGE-1: %f' % rouge_1)
-
-    result = TextSummarizer.generate_from_file('Bumi Manusia', 'dataset/plot/2.txt', 'dataset/synopsis/2.txt')
-    #print(result.get("summarize_text"))
-
-    stemmed_synopsis2 = result.get('human_preprocessed_synopsis')
-    stemmed_summary2 = result.get('token_ringkasan')
+    recall, precision, rouge_1 = rouge_n_summary_level(stemmed_summary1,stemmed_synopsis1, 3)
+    print('ROUGE-1: %f, RECALL: %f, PRECISION: %f' % (rouge_1,recall,precision))
 
 
-    _, _, rouge_1 = rouge_n_summary_level(stemmed_summary2,stemmed_synopsis2, 1)
-    print('ROUGE-1: %f' % rouge_1)
+    # result = TextSummarizer.generate_from_file('Bumi Manusia', 'dataset/plot/2.txt', 'dataset/synopsis/2.txt')
+    # #print(result.get("summarize_text"))
+
+    # stemmed_synopsis2 = result.get('human_preprocessed_synopsis')
+    # stemmed_summary2 = result.get('token_ringkasan')
+
+
+    # _, _, rouge_1 = rouge_n_summary_level(stemmed_summary2,stemmed_synopsis2, 1)
+    # print('ROUGE-1: %f' % rouge_1)
+
+
+
+    # result = TextSummarizer.generate_from_nonfile('Ada Apa Dengan Cinta', 'Narut', 'dataset/synopsis/1.txt')
+    # print(result.get("summarize_text"))
+
+    # stemmed_synopsis1 = result.get('human_preprocessed_synopsis')
+    # stemmed_summary1 = result.get('token_ringkasan')
+
+    # #print(stemmed_summary,stemmed_synopsis)
+    # print('Summary level:')
+    # _, _, rouge_1 = rouge_n_summary_level(stemmed_summary1,stemmed_synopsis1, 1)
+    # print('ROUGE-1: %f' % rouge_1)
 
 
