@@ -10,8 +10,14 @@ from Sastrawi.StopWordRemover.StopWordRemoverFactory import StopWordRemoverFacto
 
 from rouge import rouge_n_summary_level
 
+from flask import Flask
+from flask import request
+from flask import render_template
+
 nltk.download("stopwords")
 nltk.download('punkt')
+
+app = Flask(__name__)
 
 
 class TextSummarizer:
@@ -153,7 +159,7 @@ class TextSummarizer:
 
         ts = TextSummarizer(title, plot, synopsis)
         return ts.summarize()
-    
+
     @staticmethod
     def generate_from_nonfile(title, plot, synopsis, n):
         plot = plot
@@ -162,32 +168,42 @@ class TextSummarizer:
         ts = TextSummarizer(title, plot, synopsis)
         return ts.summarize(n)
 
+@app.route("/", methods=['GET', 'POST'])
+def aaa():
+    """
+    serving the web
+    """
+    if request.method == 'GET':
+        return render_template("index.html",flag=0, summary = "")
+    else:
+        text = request.form['text']
+        N = request.form['N']
+        N = int(N)
+        print (N)
+        title = request.form['title']
+        synopsis =""
+
+        result = TextSummarizer.generate_from_nonfile(title, text, synopsis, N)
+        summary = result.get('summarize_text')
+         
+        return render_template("index.html", flag=1, summary=summary, text=text, N=N, title=title)
+
 
 if __name__ == '__main__':
-    result = TextSummarizer.generate_from_file('Ada Apa Dengan Cinta', 'dataset/plot/1.txt', 'dataset/synopsis/1.txt')
-    #print(result.get("summarize_text"))
-
-
-    # result = TextSummarizer.generate_from_nonfile('Ada Apa Dengan Cinta', 'Naruto adalah anak muda yang suka. Dia ganteng. Dia akan menjadi hokage.', 'naruto hokage.', 1)
+    # result = TextSummarizer.generate_from_file('Ada Apa Dengan Cinta', 'dataset/plot/1.txt', 'dataset/synopsis/1.txt')
     # print(result.get("summarize_text"))
 
+    # stemmed_synopsis = result.get('human_preprocessed_synopsis')
+    # stemmed_summary = result.get('token_ringkasan')
 
-    stemmed_synopsis1 = result.get('human_preprocessed_synopsis')
-    stemmed_summary1 = result.get('token_ringkasan')
-
-    #print(stemmed_summary,stemmed_synopsis)
-    print('Summary level:')
-    _, _, rouge_1 = rouge_n_summary_level(stemmed_summary1,stemmed_synopsis1, 1)
-    print('ROUGE-1: %f' % rouge_1)
-
-    result = TextSummarizer.generate_from_file('Bumi Manusia', 'dataset/plot/2.txt', 'dataset/synopsis/2.txt')
-    #print(result.get("summarize_text"))
-
-    stemmed_synopsis2 = result.get('human_preprocessed_synopsis')
-    stemmed_summary2 = result.get('token_ringkasan')
+    # print(stemmed_summary,stemmed_synopsis)
+    # print('Summary level:')
+    # _, _, rouge_1 = rouge_n_summary_level(result.get("token_ringkasan"), result.get("human_preprocessed_synopsis"), 1)
+    # print('ROUGE-1: %f' % rouge_1)
+    app.run()
 
 
-    _, _, rouge_1 = rouge_n_summary_level(stemmed_summary2,stemmed_synopsis2, 1)
-    print('ROUGE-1: %f' % rouge_1)
+    
+    
 
 
